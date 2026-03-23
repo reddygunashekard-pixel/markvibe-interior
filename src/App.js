@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import BASE_URL from "./config/api";
 
 /* ─────────────────────────────────────────────────────────
    ADMIN CREDENTIALS (hardcoded)
@@ -303,7 +304,7 @@ export default function App() {
   // Reviews
   const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem("mv_reviews") || JSON.stringify(INITIAL_REVIEWS)));
   // Enquiries
-  const [enquiries, setEnquiries] = useState(() => JSON.parse(localStorage.getItem("mv_enquiries") || "[]"));
+  const [enquiries, setEnquiries] = useState([]);
 
   // UI state
   const [activeStep, setActiveStep] = useState(0);
@@ -335,7 +336,27 @@ export default function App() {
   // Persist
   useEffect(() => { localStorage.setItem("mv_photos", JSON.stringify(photos)); }, [photos]);
   useEffect(() => { localStorage.setItem("mv_reviews", JSON.stringify(reviews)); }, [reviews]);
-  useEffect(() => { localStorage.setItem("mv_enquiries", JSON.stringify(enquiries)); }, [enquiries]);
+  useEffect(() => {
+    if (isAdmin) {
+      fetch(`${BASE_URL}/users`)
+        .then(res => res.json())
+        .then(data => {
+          const mapped = data.map(item => ({
+            id: item._id || Math.random().toString(),
+            name: item.name,
+            email: item.email,
+            mobile: item.number,
+            projectType: item.flattype,
+            budget: item.budget,
+            msg: item.description || item.address,
+            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
+            read: false
+          }));
+          setEnquiries(mapped);
+        })
+        .catch(err => console.error("Error fetching enquiries:", err));
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     const fn = () => {
@@ -351,24 +372,65 @@ export default function App() {
   const P = key => photos[key] || DEFAULT_PHOTOS[key];
 
   // Contact form submit
-  const handleContactSubmit = e => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    const entry = { ...formData, id: Date.now(), date: new Date().toLocaleString(), read: false };
-    setEnquiries(prev => [entry, ...prev]);
-    setSubmitted(true);
-    setTimeout(() => { setSubmitted(false); setFormData({ name: "", mobile: "", email: "", projectType: "", msg: "" }); }, 4000);
+
+    try {
+      const response = await fetch("https://markvibe-backend-iiyb.onrender.com/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          number: formData.mobile,
+          address: formData.msg,
+          flattype: formData.projectType,
+          budget: 0,
+          description: formData.msg
+        })
+      });
+
+      const data = await response.json();
+      console.log("Success:", data);
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const budgetMap = {
+    "Under ₹5 Lakhs": 500000,
+    "₹5 – ₹10 Lakhs": 1000000,
+    "₹10 – ₹20 Lakhs": 2000000,
+    "₹20 – ₹40 Lakhs": 4000000,
+    "₹40 Lakhs+": 5000000,
+    "Not decided yet": 0
   };
 
   // Quote modal submit
-  const handleQuoteSubmit = () => {
-    const nameEl = document.getElementById("qname");
-    const mobileEl = document.getElementById("qmobile");
-    const emailEl = document.getElementById("qemail");
-    const areaEl = document.getElementById("qarea");
-    if (!nameEl?.value || !mobileEl?.value) return;
-    const entry = { name: nameEl.value, mobile: mobileEl.value, email: emailEl?.value, projectType: selectedBHK, budget: selectedBudget, area: areaEl?.value, id: Date.now(), date: new Date().toLocaleString(), read: false, source: "quote_modal" };
-    setEnquiries(prev => [entry, ...prev]);
-    resetModal();
+  const handleQuoteSubmit = async () => {
+    try {
+      await fetch("https://markvibe-backend-iiyb.onrender.com/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: document.getElementById("qname").value,
+          email: document.getElementById("qemail").value,
+          number: document.getElementById("qmobile").value,
+          address: document.getElementById("qarea").value,
+          flattype: selectedBHK,
+          budget: budgetMap[selectedBudget] || 0
+        })
+      });
+
+      resetModal();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const resetModal = () => { setShowModal(false); setModalStep(1); setSelectedBHK(null); setSelectedBudget(null); };
