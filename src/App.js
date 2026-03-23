@@ -40,9 +40,9 @@ const DEFAULT_PHOTOS = {
   step6:
     "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=700&q=80&fit=crop",
   proj1:
-    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
+     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
   proj2:
-    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=700&q=80&fit=crop",
+     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
   proj3:
     "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=700&q=80&fit=crop",
   proj4:
@@ -51,6 +51,10 @@ const DEFAULT_PHOTOS = {
     "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=700&q=80&fit=crop",
   proj6:
     "https://images.unsplash.com/photo-1592928302636-c83cf1e1c887?w=700&q=80&fit=crop",
+  proj7:
+  "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=700&q=80&fit=crop",
+  proj8:
+  "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=700&q=80&fit=crop",
 };
 
 const PHOTO_LABELS = {
@@ -74,6 +78,8 @@ const PHOTO_LABELS = {
   proj4: "Portfolio 4",
   proj5: "Portfolio 5",
   proj6: "Portfolio 6",
+  proj7: "Portfolio 7",
+  proj8: "Portfolio 8",
 };
 
 const G = "#B8892A";
@@ -593,6 +599,18 @@ const PORTFOLIO_DATA = [
     location: "Madhapur",
     tag: "Home Office · Essential",
   },
+  {
+    photoKey: "proj7",
+    title: "Home Decor & Display Units",
+    location: "Madhapur",
+    tag: "Home Office · Essential",
+  },
+  {
+    photoKey: "proj8",
+    title: "Study Table & Storage",
+    location: "Madhapur",
+    tag: "Home Office · Essential",
+  },
 ];
 
 const INITIAL_REVIEWS = [
@@ -637,7 +655,7 @@ const TESTI_PHOTOS = {
   testi2:
     "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400&q=80&fit=crop",
   testi3:
-    "https://images.unsplash.com/photo-1600047508788-786f3865b07c?w=400&q=80&fit=crop",
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=700&q=80&fit=crop",
 };
 
 const SOLUTIONS = [
