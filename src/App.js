@@ -320,8 +320,28 @@ export default function App() {
 
   // Review form
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ name: "", location: "", project: "", text: "", stars: 5 });
+  const [reviewForm, setReviewForm] = useState({ name: "", location: "", project: "", text: "", stars: 5, image: null });
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const handleReviewImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // ✅ 5MB validation
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be less than 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setReviewForm(prev => ({
+        ...prev,
+        image: reader.result // 👈 base64
+      }));
+    };
+
+    reader.readAsDataURL(file);
+  };
 
   // Admin
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -439,7 +459,7 @@ export default function App() {
   const handleReviewSubmit = e => {
     e.preventDefault();
     if (!reviewForm.name || !reviewForm.text) return;
-    const newReview = { ...reviewForm, id: Date.now(), approved: false, date: new Date().toLocaleDateString(), photoKey: "testi1" };
+    const newReview = { ...reviewForm, id: Date.now(), approved: false, date: new Date().toLocaleDateString() };
     setReviews(prev => [...prev, newReview]);
     setReviewSubmitted(true);
     setTimeout(() => { setReviewSubmitted(false); setReviewForm({ name: "", location: "", project: "", text: "", stars: 5 }); setShowReviewForm(false); }, 3000);
@@ -1124,8 +1144,11 @@ export default function App() {
                   <div className="testi-card">
                     {/* Project photo */}
                     <div style={{ height: "170px", margin: "-32px -28px 22px", overflow: "hidden", position: "relative" }}>
-                      <img src={TESTI_PHOTOS[r.photoKey] || TESTI_PHOTOS.testi1} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg,transparent 40%,rgba(26,23,20,.65) 100%)" }} />
+                      <img
+                        src={r.image || TESTI_PHOTOS[r.photoKey] || TESTI_PHOTOS.testi1}
+                        alt=""
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg,transparent 40%,rgba(26,23,20,.65) 100%)" }} />
                       <div style={{ position: "absolute", bottom: "11px", left: "14px" }}>
                         <div style={{ display: "inline-block", padding: "3px 9px", background: "rgba(184,137,42,0.9)", fontSize: ".6rem", color: "#fff", letterSpacing: ".09em", textTransform: "uppercase" }}>{r.project || "Client Review"}</div>
                       </div>
@@ -1343,6 +1366,18 @@ export default function App() {
                       <input className="form-input" placeholder="Your Full Name *" value={reviewForm.name} onChange={e => setReviewForm(p => ({ ...p, name: e.target.value }))} required />
                       <input className="form-input" placeholder="Your Location (e.g. Banjara Hills, Hyderabad)" value={reviewForm.location} onChange={e => setReviewForm(p => ({ ...p, location: e.target.value }))} />
                       <input className="form-input" placeholder="Project (e.g. 3 BHK · Premium Plan)" value={reviewForm.project} onChange={e => setReviewForm(p => ({ ...p, project: e.target.value }))} />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleReviewImage}
+                      />
+                      {reviewForm.image && (
+                        <img
+                          src={reviewForm.image}
+                          alt="preview"
+                          style={{ width: "100px", marginTop: "10px" }}
+                        />
+                      )}
                       {/* Star rating */}
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <span style={{ fontSize: ".78rem", color: "var(--muted)" }}>Your Rating:</span>
