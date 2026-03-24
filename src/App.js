@@ -1761,13 +1761,13 @@ export default function App() {
           boxShadow: navBg ? "0 2px 20px rgba(0,0,0,0.06)" : "none",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
           <img
             src="/images/I-logo.png"
             alt="Markvibe Logo"
             style={{
-              width: "50px",
-              height: "50px",
+              width: "60px",
+              height: "60px",
               objectFit: "contain",
               filter: "contrast(1.2)",
             }}
@@ -1776,7 +1776,7 @@ export default function App() {
             <div
               style={{
                 fontFamily: "'Playfair Display',serif",
-                fontSize: ".96rem",
+                fontSize: "1.35rem",
                 fontWeight: 700,
                 letterSpacing: ".08em",
                 color: "var(--ink)",
@@ -1817,7 +1817,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "2px", alignItems: "center" }}>
           <button
             onClick={() => setShowAdminLogin(true)}
             style={{
@@ -1829,7 +1829,7 @@ export default function App() {
               letterSpacing: ".1em",
               textTransform: "uppercase",
               fontFamily: "'DM Sans',sans-serif",
-              padding: "6px 10px",
+              padding: "2px 2px",
             }}
           >
             Admin
@@ -1843,6 +1843,7 @@ export default function App() {
           </button>
         </div>
       </nav>
+      
 
       {/* ── HERO ── */}
       <section

@@ -1,3 +1,92 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* SMALL MOBILE (0 - 480px) */
+@media (max-width: 480px) {
+  nav {
+    padding: 0 12px !important;
+    height: 58px !important;
+  }
+
+  /* Logo */
+  nav img {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  /* Hide menu */
+  .hide-md {
+    display: none !important;
+  }
+
+  /* RIGHT SIDE CONTAINER FIX */
+  nav > div:last-child {
+    gap: 6px !important;              /* reduce gap */
+  }
+
+  /* ADMIN BUTTON FIX */
+  nav > div:last-child button:first-child {
+    font-size: 0.55rem !important;
+    padding: 8px 6px !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  /* QUOTE BUTTON FIX */
+  .btn-gold {
+    padding: 6px 10px !important;
+    font-size: 0.55rem !important;
+    white-space: nowrap; /* prevent breaking */
+  }
+}
+/* MEDIUM MOBILE (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  nav {
+    padding: 0 24px !important;
+    height: 64px !important;
+  }
+
+  nav img {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .hide-md {
+    display: none !important; /* still hide menu */
+  }
+
+  nav button {
+    font-size: 0.65rem !important;
+  }
+
+  .btn-gold {
+    padding: 10px 18px !important;
+    font-size: 0.65rem !important;
+  }
+}
+/* LARGE MOBILE / SMALL TABLET (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  nav {
+    padding: 0 32px !important;
+  }
+
+  nav img {
+    width: 55px !important;
+    height: 55px !important;
+  }
+
+  .hide-md {
+    display: flex !important; /* show menu */
+    gap: 18px !important;
+  }
+
+  nav button {
+    font-size: 0.7rem !important;
+  }
+
+  .btn-gold {
+    padding: 10px 20px !important;
+  }
+}
+.nav-link {
+  white-space: nowrap;
+}
