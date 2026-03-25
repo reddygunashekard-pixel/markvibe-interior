@@ -102,7 +102,7 @@ const GlobalStyle = () => (
     ::-webkit-scrollbar-track{background:#f5f5f3}
     ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
     .serif{font-family:'Playfair Display',serif}
-    .section-label{font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);font-weight:500;font-family:'DM Sans',sans-serif}
+    .section-label{font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:#a8842f, 42);font-weight:500;font-family:'DM Sans',sans-serif}
     .section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:600;line-height:1.15;color:var(--ink)}
     .gold-divider{width:48px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));margin:16px 0 28px}
     .gold-divider.center{margin:16px auto 28px}
@@ -686,6 +686,7 @@ export default function App() {
     ...JSON.parse(localStorage.getItem("mv_photos") || "{}"),
   }));
   // Reviews
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const [reviews, setReviews] = useState(() =>
     JSON.parse(
       localStorage.getItem("mv_reviews") || JSON.stringify(INITIAL_REVIEWS),
@@ -1920,7 +1921,7 @@ export default function App() {
             transition={{ duration: 0.5 }}
             className="section-label"
           >
-            Hyderabad's Premier Interior Studio · Since 2012
+            Hyderabad's Premier Interior Studio · Since 2023
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -3381,225 +3382,264 @@ export default function App() {
 
       {/* ── REVIEWS ── */}
       <section
-        id="reviews"
-        style={{ padding: "96px 48px", background: "var(--off-white)" }}
+  id="reviews"
+  style={{ padding: "96px 48px", background: "var(--off-white)" }}
+>
+  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <Reveal style={{ textAlign: "center", marginBottom: "48px" }}>
+      <span className="section-label">Client Stories</span>
+      <h2 className="section-title" style={{ marginTop: "12px" }}>
+        Homes We've Transformed
+      </h2>
+      <div className="gold-divider center" />
+      <p
+        style={{
+          color: "var(--muted)",
+          maxWidth: "480px",
+          margin: "0 auto",
+          lineHeight: 1.8,
+          fontSize: ".93rem",
+        }}
       >
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <Reveal style={{ textAlign: "center", marginBottom: "48px" }}>
-            <span className="section-label">Client Stories</span>
-            <h2 className="section-title" style={{ marginTop: "12px" }}>
-              Homes We've Transformed
-            </h2>
-            <div className="gold-divider center" />
-            <p
-              style={{
-                color: "var(--muted)",
-                maxWidth: "480px",
-                margin: "0 auto",
-                lineHeight: 1.8,
-                fontSize: ".93rem",
-              }}
-            >
-              Real experiences from real clients. Every review is verified by
-              our team.
-            </p>
-          </Reveal>
+        Real experiences from real clients. Every review is verified by
+        our team.
+      </p>
+    </Reveal>
 
-          {/* Reviews grid */}
-          {approvedReviews.length > 0 ? (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3,1fr)",
-                gap: "20px",
-                marginBottom: "48px",
-              }}
-              className="three-col"
-            >
-              {approvedReviews.map((r, i) => (
-                <Reveal key={r.id} delay={i * 0.08}>
-                  <div className="testi-card">
-                    {/* Project photo */}
+    {/* Reviews grid */}
+    {approvedReviews.length > 0 ? (
+      <>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: "20px",
+            marginBottom: "48px",
+          }}
+          className="three-col"
+        >
+          {(showAllReviews
+            ? approvedReviews
+            : approvedReviews.slice(0, 3)
+          ).map((r, i) => (
+            <Reveal key={r.id} delay={i * 0.08}>
+              <div className="testi-card">
+                {/* Project photo */}
+                <div
+                  style={{
+                    height: "170px",
+                    margin: "-32px -28px 22px",
+                    overflow: "hidden",
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={
+                      r.image ||
+                      TESTI_PHOTOS[r.photoKey] ||
+                      TESTI_PHOTOS.testi1
+                    }
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(180deg,transparent 40%,rgba(26,23,20,.65) 100%)",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "11px",
+                      left: "14px",
+                    }}
+                  >
                     <div
                       style={{
-                        height: "170px",
-                        margin: "-32px -28px 22px",
-                        overflow: "hidden",
-                        position: "relative",
+                        display: "inline-block",
+                        padding: "3px 9px",
+                        background: "rgba(184,137,42,0.9)",
+                        fontSize: ".6rem",
+                        color: "#fff",
+                        letterSpacing: ".09em",
+                        textTransform: "uppercase",
                       }}
                     >
-                      <img
-                        src={
-                          r.image ||
-                          TESTI_PHOTOS[r.photoKey] ||
-                          TESTI_PHOTOS.testi1
-                        }
-                        alt=""
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />{" "}
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background:
-                            "linear-gradient(180deg,transparent 40%,rgba(26,23,20,.65) 100%)",
-                        }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: "11px",
-                          left: "14px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "inline-block",
-                            padding: "3px 9px",
-                            background: "rgba(184,137,42,0.9)",
-                            fontSize: ".6rem",
-                            color: "#fff",
-                            letterSpacing: ".09em",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {r.project || "Client Review"}
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "2px",
-                        marginBottom: "14px",
-                      }}
-                    >
-                      {Array(r.stars)
-                        .fill(0)
-                        .map((_, j) => (
-                          <svg
-                            key={j}
-                            width="13"
-                            height="13"
-                            viewBox="0 0 14 14"
-                            fill={G}
-                          >
-                            <polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" />
-                          </svg>
-                        ))}
-                    </div>
-                    <p
-                      style={{
-                        fontSize: ".88rem",
-                        color: "var(--muted)",
-                        lineHeight: 1.82,
-                        marginBottom: "22px",
-                        fontStyle: "italic",
-                        flex: 1,
-                      }}
-                    >
-                      "{r.text}"
-                    </p>
-                    <div
-                      style={{
-                        borderTop: "1px solid var(--border)",
-                        paddingTop: "16px",
-                        marginTop: "auto",
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          fontSize: ".86rem",
-                          color: "var(--ink)",
-                        }}
-                      >
-                        {r.name}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: ".7rem",
-                          color: G,
-                          letterSpacing: ".07em",
-                          marginTop: "3px",
-                        }}
-                      >
-                        {r.location}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: ".66rem",
-                          color: "var(--muted)",
-                          marginTop: "3px",
-                        }}
-                      >
-                        {r.date}
-                      </div>
+                      {r.project || "Client Review"}
                     </div>
                   </div>
-                </Reveal>
-              ))}
-            </div>
-          ) : (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "48px 20px",
-                marginBottom: "32px",
-                background: "var(--white)",
-                border: "1px solid var(--border)",
-              }}
-            >
-              <div style={{ fontSize: "2rem", marginBottom: "10px" }}>💬</div>
-              <p style={{ color: "var(--muted)", fontSize: ".9rem" }}>
-                Be the first to share your experience with MARKVIBE!
-              </p>
-            </div>
-          )}
+                </div>
 
-          {/* Add Review CTA */}
-          <Reveal style={{ textAlign: "center" }}>
-            <div
-              style={{
-                background: "var(--white)",
-                border: "1.5px solid var(--border)",
-                padding: "36px 44px",
-                maxWidth: "540px",
-                margin: "0 auto",
-              }}
-            >
-              <h3
-                className="serif"
-                style={{ fontSize: "1.5rem", marginBottom: "10px" }}
-              >
-                Share Your Experience
-              </h3>
-              <p
-                style={{
-                  color: "var(--muted)",
-                  fontSize: ".86rem",
-                  lineHeight: 1.7,
-                  marginBottom: "20px",
-                }}
-              >
-                Had your home designed by MARKVIBE? We'd love to hear from you —
-                your review helps other homeowners make the right choice.
-              </p>
-              <button
-                className="btn-gold"
-                onClick={() => setShowReviewForm(true)}
-              >
-                Write a Review →
-              </button>
-            </div>
-          </Reveal>
+                {/* Stars */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "2px",
+                    marginBottom: "14px",
+                  }}
+                >
+                  {Array(r.stars)
+                    .fill(0)
+                    .map((_, j) => (
+                      <svg
+                        key={j}
+                        width="13"
+                        height="13"
+                        viewBox="0 0 14 14"
+                        fill={G}
+                      >
+                        <polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" />
+                      </svg>
+                    ))}
+                </div>
+
+                {/* Review Text */}
+                <p
+                  style={{
+                    fontSize: ".88rem",
+                    color: "var(--muted)",
+                    lineHeight: 1.82,
+                    marginBottom: "22px",
+                    fontStyle: "italic",
+                    flex: 1,
+                  }}
+                >
+                  "{r.text}"
+                </p>
+
+                {/* User Info */}
+                <div
+                  style={{
+                    borderTop: "1px solid var(--border)",
+                    paddingTop: "16px",
+                    marginTop: "auto",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: ".86rem",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    {r.name}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: ".7rem",
+                      color: G,
+                      letterSpacing: ".07em",
+                      marginTop: "3px",
+                    }}
+                  >
+                    {r.location}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: ".66rem",
+                      color: "var(--muted)",
+                      marginTop: "3px",
+                    }}
+                  >
+                    {r.date}
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
         </div>
-      </section>
 
+        {/* 🔥 Read More Button */}
+        {approvedReviews.length > 3 && (
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
+            <button
+              onClick={() => {
+                setShowAllReviews(!showAllReviews);
+
+                if (showAllReviews) {
+                  document
+                    .getElementById("reviews")
+                    .scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              style={{
+                padding: "10px 24px",
+                border: "1px solid #C9A34E",
+                background: "transparent",
+                color: "#C9A34E",
+                cursor: "pointer",
+                fontSize: ".8rem",
+                letterSpacing: ".08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {showAllReviews ? "Show Less ↑" : "Read More ↓"}
+            </button>
+          </div>
+        )}
+      </>
+    ) : (
+      <div
+        style={{
+          textAlign: "center",
+          padding: "48px 20px",
+          marginBottom: "32px",
+          background: "var(--white)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div style={{ fontSize: "2rem", marginBottom: "10px" }}>💬</div>
+        <p style={{ color: "var(--muted)", fontSize: ".9rem" }}>
+          Be the first to share your experience with MARKVIBE!
+        </p>
+      </div>
+    )}
+
+    {/* Add Review CTA */}
+    <Reveal style={{ textAlign: "center" }}>
+      <div
+        style={{
+          background: "var(--white)",
+          border: "1.5px solid var(--border)",
+          padding: "36px 44px",
+          maxWidth: "540px",
+          margin: "0 auto",
+        }}
+      >
+        <h3
+          className="serif"
+          style={{ fontSize: "1.5rem", marginBottom: "10px" }}
+        >
+          Share Your Experience
+        </h3>
+        <p
+          style={{
+            color: "var(--muted)",
+            fontSize: ".86rem",
+            lineHeight: 1.7,
+            marginBottom: "20px",
+          }}
+        >
+          Had your home designed by MARKVIBE? We'd love to hear from you —
+          your review helps other homeowners make the right choice.
+        </p>
+        <button
+          className="btn-gold"
+          onClick={() => setShowReviewForm(true)}
+        >
+          Write a Review →
+        </button>
+      </div>
+    </Reveal>
+  </div>
+</section>
       {/* ── CONTACT ── */}
       <section id="contact" style={{ padding: 0, background: "var(--white)" }}>
         <div
