@@ -40,9 +40,9 @@ const DEFAULT_PHOTOS = {
   step6:
     "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=700&q=80&fit=crop",
   proj1:
-     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
   proj2:
-     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80&fit=crop",
   proj3:
     "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=700&q=80&fit=crop",
   proj4:
@@ -52,9 +52,9 @@ const DEFAULT_PHOTOS = {
   proj6:
     "https://images.unsplash.com/photo-1592928302636-c83cf1e1c887?w=700&q=80&fit=crop",
   proj7:
-  "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=700&q=80&fit=crop",
+    "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=700&q=80&fit=crop",
   proj8:
-  "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=700&q=80&fit=crop",
+    "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=700&q=80&fit=crop",
 };
 
 const PHOTO_LABELS = {
@@ -912,6 +912,55 @@ export default function App() {
     }
   };
 
+  const downloadCSV = (data, filename) => {
+    if (!data || !data.length) return;
+    const headers = Object.keys(data[0]);
+    const csvRows = [
+      headers.join(","),
+      ...data.map((row) =>
+        headers
+          .map((header) =>
+            JSON.stringify((row[header] !== undefined && row[header] !== null ? row[header] : "").toString())
+          )
+          .join(",")
+      ),
+    ].join("\n");
+    const blob = new Blob([csvRows], { type: "text/csv;charset=utf-8;" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportEnquiries = () => {
+    const csvData = enquiries.map((e) => ({
+      Name: e.name || "",
+      Mobile: e.mobile || e.number || "",
+      Email: e.email || "",
+      "Project Type": e.projectType || e.flattype || e.source || "",
+      Budget: e.budget || "",
+      Message: e.msg || e.description || e.area || "",
+      Date: e.date || "",
+      Status: e.read ? "Read" : "New",
+    }));
+    downloadCSV(csvData, "enquiries.csv");
+  };
+
+  const handleExportReviews = () => {
+    const csvData = reviews.map((r) => ({
+      Name: r.name || "",
+      Location: r.location || "",
+      Project: r.project || "",
+      Rating: r.stars || "",
+      Review: r.text || "",
+      Date: r.date || "",
+      Status: r.approved ? "Approved" : "Pending",
+    }));
+    downloadCSV(csvData, "reviews.csv");
+  };
+
   const markEnquiryRead = (id) =>
     setEnquiries((prev) =>
       prev.map((e) => (e.id === id ? { ...e, read: true } : e)),
@@ -1134,6 +1183,44 @@ export default function App() {
                       {enquiries.length} total · {unreadCount} unread
                     </div>
                   </div>
+                  <button
+                    onClick={handleExportEnquiries}
+                    style={{
+                      background: "rgba(232, 226, 218, 0.1)",
+                      color: "#E8E2DA",
+                      border: "1px solid rgba(232, 226, 218, 0.2)",
+                      padding: "8px 16px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = "rgba(232, 226, 218, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = "rgba(232, 226, 218, 0.1)";
+                    }}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export CSV
+                  </button>
                 </div>
                 {enquiries.length === 0 ? (
                   <div
@@ -1249,25 +1336,70 @@ export default function App() {
             {/* ── REVIEWS TAB ── */}
             {adminTab === "reviews" && (
               <div>
-                <div style={{ marginBottom: "24px" }}>
-                  <div
+                <div style={{
+                  marginBottom: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}>
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: "'Playfair Display',serif",
+                        fontSize: "1.5rem",
+                        color: "#E8E2DA",
+                      }}
+                    >
+                      Reviews Management
+                    </div>
+                    <div
+                      style={{
+                        fontSize: ".78rem",
+                        color: "#7A746E",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {reviews.length} total · {pendingReviews} awaiting approval
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleExportReviews}
                     style={{
-                      fontFamily: "'Playfair Display',serif",
-                      fontSize: "1.5rem",
+                      background: "rgba(232, 226, 218, 0.1)",
                       color: "#E8E2DA",
+                      border: "1px solid rgba(232, 226, 218, 0.2)",
+                      padding: "8px 16px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = "rgba(232, 226, 218, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = "rgba(232, 226, 218, 0.1)";
                     }}
                   >
-                    Reviews Management
-                  </div>
-                  <div
-                    style={{
-                      fontSize: ".78rem",
-                      color: "#7A746E",
-                      marginTop: "4px",
-                    }}
-                  >
-                    {reviews.length} total · {pendingReviews} awaiting approval
-                  </div>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export CSV
+                  </button>
                 </div>
                 {pendingReviews > 0 && (
                   <div
@@ -1844,7 +1976,7 @@ export default function App() {
           </button>
         </div>
       </nav>
-      
+
 
       {/* ── HERO ── */}
       <section
@@ -3382,264 +3514,264 @@ export default function App() {
 
       {/* ── REVIEWS ── */}
       <section
-  id="reviews"
-  style={{ padding: "96px 48px", background: "var(--off-white)" }}
->
-  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-    <Reveal style={{ textAlign: "center", marginBottom: "48px" }}>
-      <span className="section-label">Client Stories</span>
-      <h2 className="section-title" style={{ marginTop: "12px" }}>
-        Homes We've Transformed
-      </h2>
-      <div className="gold-divider center" />
-      <p
-        style={{
-          color: "var(--muted)",
-          maxWidth: "480px",
-          margin: "0 auto",
-          lineHeight: 1.8,
-          fontSize: ".93rem",
-        }}
+        id="reviews"
+        style={{ padding: "96px 48px", background: "var(--off-white)" }}
       >
-        Real experiences from real clients. Every review is verified by
-        our team.
-      </p>
-    </Reveal>
-
-    {/* Reviews grid */}
-    {approvedReviews.length > 0 ? (
-      <>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
-            gap: "20px",
-            marginBottom: "48px",
-          }}
-          className="three-col"
-        >
-          {(showAllReviews
-            ? approvedReviews
-            : approvedReviews.slice(0, 3)
-          ).map((r, i) => (
-            <Reveal key={r.id} delay={i * 0.08}>
-              <div className="testi-card">
-                {/* Project photo */}
-                <div
-                  style={{
-                    height: "170px",
-                    margin: "-32px -28px 22px",
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  <img
-                    src={
-                      r.image ||
-                      TESTI_PHOTOS[r.photoKey] ||
-                      TESTI_PHOTOS.testi1
-                    }
-                    alt=""
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "linear-gradient(180deg,transparent 40%,rgba(26,23,20,.65) 100%)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "11px",
-                      left: "14px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "inline-block",
-                        padding: "3px 9px",
-                        background: "rgba(184,137,42,0.9)",
-                        fontSize: ".6rem",
-                        color: "#fff",
-                        letterSpacing: ".09em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {r.project || "Client Review"}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Stars */}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "2px",
-                    marginBottom: "14px",
-                  }}
-                >
-                  {Array(r.stars)
-                    .fill(0)
-                    .map((_, j) => (
-                      <svg
-                        key={j}
-                        width="13"
-                        height="13"
-                        viewBox="0 0 14 14"
-                        fill={G}
-                      >
-                        <polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" />
-                      </svg>
-                    ))}
-                </div>
-
-                {/* Review Text */}
-                <p
-                  style={{
-                    fontSize: ".88rem",
-                    color: "var(--muted)",
-                    lineHeight: 1.82,
-                    marginBottom: "22px",
-                    fontStyle: "italic",
-                    flex: 1,
-                  }}
-                >
-                  "{r.text}"
-                </p>
-
-                {/* User Info */}
-                <div
-                  style={{
-                    borderTop: "1px solid var(--border)",
-                    paddingTop: "16px",
-                    marginTop: "auto",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      fontSize: ".86rem",
-                      color: "var(--ink)",
-                    }}
-                  >
-                    {r.name}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: ".7rem",
-                      color: G,
-                      letterSpacing: ".07em",
-                      marginTop: "3px",
-                    }}
-                  >
-                    {r.location}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: ".66rem",
-                      color: "var(--muted)",
-                      marginTop: "3px",
-                    }}
-                  >
-                    {r.date}
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-
-        {/* 🔥 Read More Button */}
-        {approvedReviews.length > 3 && (
-          <div style={{ textAlign: "center", marginBottom: "40px" }}>
-            <button
-              onClick={() => {
-                setShowAllReviews(!showAllReviews);
-
-                if (showAllReviews) {
-                  document
-                    .getElementById("reviews")
-                    .scrollIntoView({ behavior: "smooth" });
-                }
-              }}
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <Reveal style={{ textAlign: "center", marginBottom: "48px" }}>
+            <span className="section-label">Client Stories</span>
+            <h2 className="section-title" style={{ marginTop: "12px" }}>
+              Homes We've Transformed
+            </h2>
+            <div className="gold-divider center" />
+            <p
               style={{
-                padding: "10px 24px",
-                border: "1px solid #C9A34E",
-                background: "transparent",
-                color: "#C9A34E",
-                cursor: "pointer",
-                fontSize: ".8rem",
-                letterSpacing: ".08em",
-                textTransform: "uppercase",
+                color: "var(--muted)",
+                maxWidth: "480px",
+                margin: "0 auto",
+                lineHeight: 1.8,
+                fontSize: ".93rem",
               }}
             >
-              {showAllReviews ? "Show Less ↑" : "Read More ↓"}
-            </button>
-          </div>
-        )}
-      </>
-    ) : (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "48px 20px",
-          marginBottom: "32px",
-          background: "var(--white)",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <div style={{ fontSize: "2rem", marginBottom: "10px" }}>💬</div>
-        <p style={{ color: "var(--muted)", fontSize: ".9rem" }}>
-          Be the first to share your experience with MARKVIBE!
-        </p>
-      </div>
-    )}
+              Real experiences from real clients. Every review is verified by
+              our team.
+            </p>
+          </Reveal>
 
-    {/* Add Review CTA */}
-    <Reveal style={{ textAlign: "center" }}>
-      <div
-        style={{
-          background: "var(--white)",
-          border: "1.5px solid var(--border)",
-          padding: "36px 44px",
-          maxWidth: "540px",
-          margin: "0 auto",
-        }}
-      >
-        <h3
-          className="serif"
-          style={{ fontSize: "1.5rem", marginBottom: "10px" }}
-        >
-          Share Your Experience
-        </h3>
-        <p
-          style={{
-            color: "var(--muted)",
-            fontSize: ".86rem",
-            lineHeight: 1.7,
-            marginBottom: "20px",
-          }}
-        >
-          Had your home designed by MARKVIBE? We'd love to hear from you —
-          your review helps other homeowners make the right choice.
-        </p>
-        <button
-          className="btn-gold"
-          onClick={() => setShowReviewForm(true)}
-        >
-          Write a Review →
-        </button>
-      </div>
-    </Reveal>
-  </div>
-</section>
+          {/* Reviews grid */}
+          {approvedReviews.length > 0 ? (
+            <>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3,1fr)",
+                  gap: "20px",
+                  marginBottom: "48px",
+                }}
+                className="three-col"
+              >
+                {(showAllReviews
+                  ? approvedReviews
+                  : approvedReviews.slice(0, 3)
+                ).map((r, i) => (
+                  <Reveal key={r.id} delay={i * 0.08}>
+                    <div className="testi-card">
+                      {/* Project photo */}
+                      <div
+                        style={{
+                          height: "170px",
+                          margin: "-32px -28px 22px",
+                          overflow: "hidden",
+                          position: "relative",
+                        }}
+                      >
+                        <img
+                          src={
+                            r.image ||
+                            TESTI_PHOTOS[r.photoKey] ||
+                            TESTI_PHOTOS.testi1
+                          }
+                          alt=""
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            background:
+                              "linear-gradient(180deg,transparent 40%,rgba(26,23,20,.65) 100%)",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "11px",
+                            left: "14px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              padding: "3px 9px",
+                              background: "rgba(184,137,42,0.9)",
+                              fontSize: ".6rem",
+                              color: "#fff",
+                              letterSpacing: ".09em",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            {r.project || "Client Review"}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Stars */}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "2px",
+                          marginBottom: "14px",
+                        }}
+                      >
+                        {Array(r.stars)
+                          .fill(0)
+                          .map((_, j) => (
+                            <svg
+                              key={j}
+                              width="13"
+                              height="13"
+                              viewBox="0 0 14 14"
+                              fill={G}
+                            >
+                              <polygon points="7,1 8.8,5.5 13.5,5.5 9.8,8.5 11.2,13 7,10.2 2.8,13 4.2,8.5 0.5,5.5 5.2,5.5" />
+                            </svg>
+                          ))}
+                      </div>
+
+                      {/* Review Text */}
+                      <p
+                        style={{
+                          fontSize: ".88rem",
+                          color: "var(--muted)",
+                          lineHeight: 1.82,
+                          marginBottom: "22px",
+                          fontStyle: "italic",
+                          flex: 1,
+                        }}
+                      >
+                        "{r.text}"
+                      </p>
+
+                      {/* User Info */}
+                      <div
+                        style={{
+                          borderTop: "1px solid var(--border)",
+                          paddingTop: "16px",
+                          marginTop: "auto",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontWeight: 600,
+                            fontSize: ".86rem",
+                            color: "var(--ink)",
+                          }}
+                        >
+                          {r.name}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: ".7rem",
+                            color: G,
+                            letterSpacing: ".07em",
+                            marginTop: "3px",
+                          }}
+                        >
+                          {r.location}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: ".66rem",
+                            color: "var(--muted)",
+                            marginTop: "3px",
+                          }}
+                        >
+                          {r.date}
+                        </div>
+                      </div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+
+              {/* 🔥 Read More Button */}
+              {approvedReviews.length > 3 && (
+                <div style={{ textAlign: "center", marginBottom: "40px" }}>
+                  <button
+                    onClick={() => {
+                      setShowAllReviews(!showAllReviews);
+
+                      if (showAllReviews) {
+                        document
+                          .getElementById("reviews")
+                          .scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                    style={{
+                      padding: "10px 24px",
+                      border: "1px solid #C9A34E",
+                      background: "transparent",
+                      color: "#C9A34E",
+                      cursor: "pointer",
+                      fontSize: ".8rem",
+                      letterSpacing: ".08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {showAllReviews ? "Show Less ↑" : "Read More ↓"}
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "48px 20px",
+                marginBottom: "32px",
+                background: "var(--white)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <div style={{ fontSize: "2rem", marginBottom: "10px" }}>💬</div>
+              <p style={{ color: "var(--muted)", fontSize: ".9rem" }}>
+                Be the first to share your experience with MARKVIBE!
+              </p>
+            </div>
+          )}
+
+          {/* Add Review CTA */}
+          <Reveal style={{ textAlign: "center" }}>
+            <div
+              style={{
+                background: "var(--white)",
+                border: "1.5px solid var(--border)",
+                padding: "36px 44px",
+                maxWidth: "540px",
+                margin: "0 auto",
+              }}
+            >
+              <h3
+                className="serif"
+                style={{ fontSize: "1.5rem", marginBottom: "10px" }}
+              >
+                Share Your Experience
+              </h3>
+              <p
+                style={{
+                  color: "var(--muted)",
+                  fontSize: ".86rem",
+                  lineHeight: 1.7,
+                  marginBottom: "20px",
+                }}
+              >
+                Had your home designed by MARKVIBE? We'd love to hear from you —
+                your review helps other homeowners make the right choice.
+              </p>
+              <button
+                className="btn-gold"
+                onClick={() => setShowReviewForm(true)}
+              >
+                Write a Review →
+              </button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
       {/* ── CONTACT ── */}
       <section id="contact" style={{ padding: 0, background: "var(--white)" }}>
         <div
@@ -3749,49 +3881,49 @@ export default function App() {
               >
 
                 {/* 🔥 Premium side box */}
-<div style={{
-  minWidth: "36px",
-  height: "36px",
-  borderRadius: "8px",
-  background: "linear-gradient(135deg, rgba(184,137,42,0.15), rgba(184,137,42,0.05))",
-  border: "1px solid rgba(184,137,42,0.3)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginTop: "4px",
-  transition: "all 0.3s ease",
-  boxShadow: "0 2px 10px rgba(184,137,42,0.08)"
-}}>
-  
-  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-  {c.label === "Studio" && (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M12 21s-6-5.33-6-10a6 6 0 1 1 12 0c0 4.67-6 10-6 10z" stroke={G} strokeWidth="1.6"/>
-      <circle cx="12" cy="11" r="2.5" stroke={G} strokeWidth="1.6"/>
-    </svg>
-  )}
+                <div style={{
+                  minWidth: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "linear-gradient(135deg, rgba(184,137,42,0.15), rgba(184,137,42,0.05))",
+                  border: "1px solid rgba(184,137,42,0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: "4px",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 2px 10px rgba(184,137,42,0.08)"
+                }}>
 
-  {c.label === "Phone" && (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M6.6 10.8a15.05 15.05 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11.36 11.36 0 003.6.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 6a1 1 0 011-1h2.4a1 1 0 011 1 11.36 11.36 0 00.6 3.6 1 1 0 01-.24 1l-2.16 2.2z" stroke={G} strokeWidth="1.6"/>
-    </svg>
-  )}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {c.label === "Studio" && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21s-6-5.33-6-10a6 6 0 1 1 12 0c0 4.67-6 10-6 10z" stroke={G} strokeWidth="1.6" />
+                        <circle cx="12" cy="11" r="2.5" stroke={G} strokeWidth="1.6" />
+                      </svg>
+                    )}
 
-  {c.label === "Email" && (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="5" width="18" height="14" rx="2" stroke={G} strokeWidth="1.6"/>
-      <path d="M3 7l9 6 9-6" stroke={G} strokeWidth="1.6"/>
-    </svg>
-  )}
+                    {c.label === "Phone" && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M6.6 10.8a15.05 15.05 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11.36 11.36 0 003.6.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 6a1 1 0 011-1h2.4a1 1 0 011 1 11.36 11.36 0 00.6 3.6 1 1 0 01-.24 1l-2.16 2.2z" stroke={G} strokeWidth="1.6" />
+                      </svg>
+                    )}
 
-  {c.label === "Hours" && (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke={G} strokeWidth="1.6"/>
-      <path d="M12 7v5l3 2" stroke={G} strokeWidth="1.6" strokeLinecap="round"/>
-    </svg>
-  )}
-</div>
-</div>
+                    {c.label === "Email" && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="5" width="18" height="14" rx="2" stroke={G} strokeWidth="1.6" />
+                        <path d="M3 7l9 6 9-6" stroke={G} strokeWidth="1.6" />
+                      </svg>
+                    )}
+
+                    {c.label === "Hours" && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke={G} strokeWidth="1.6" />
+                        <path d="M12 7v5l3 2" stroke={G} strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
 
                 <div>
                   <div style={{

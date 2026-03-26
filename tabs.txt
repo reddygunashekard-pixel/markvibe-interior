@@ -1,0 +1,5 @@
+751:   const [adminTab, setAdminTab] = useState("enquiries");
+1038:                 className={`admin-nav-item ${adminTab === item.id ? "active" : ""}`}
+1107:             {adminTab === "enquiries" && (
+1250:             {adminTab === "reviews" && (
+1455:             {adminTab === "images" && (
