@@ -165,6 +165,7 @@ const GlobalStyle = () => (
     .sol-card:hover{border-color:var(--gold-light);background:var(--gold-pale);transform:translateY(-3px)}
     .testi-card{background:var(--off-white);border:1px solid var(--border);padding:32px 28px;position:relative;display:flex;flex-direction:column;height:100%}
     .testi-card::before{content:'"';font-family:'Playfair Display',serif;font-size:6rem;color:var(--gold);opacity:.12;position:absolute;top:-10px;left:14px;line-height:1;pointer-events:none}
+    .testi-img-wrapper { margin: -32px -28px 22px; }
 
     /* Form inputs */
     .form-input{width:100%;border:1.5px solid var(--border);padding:13px 15px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s;border-radius:0}
@@ -213,6 +214,14 @@ const GlobalStyle = () => (
     .img-slot{background:#131110;border:1px dashed #2E2A27;padding:18px 14px;text-align:center;transition:border-color .2s}
     .img-slot:hover{border-color:var(--gold)}
 
+    /* Prevent mobile horizontal overflow (white gaps on the right) */
+    html, body, #root, .App {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      margin: 0;
+      padding: 0;
+    }
+
     @media(max-width:900px){
       .hide-md{display:none!important}
       .two-col{grid-template-columns:1fr!important}
@@ -221,15 +230,67 @@ const GlobalStyle = () => (
       .six-col{grid-template-columns:repeat(3,1fr)!important}
       .modal-box{padding:32px 20px!important}
       .admin-sidebar{width:180px}
+      section { padding-left: 32px !important; padding-right: 32px !important; }
+      .scroll-badge { display: none !important; }
+      .satisfaction-box {
+        bottom: 24px !important; right: 24px !important;
+        transform: scale(0.85); transform-origin: bottom right;
+      }
     }
     @media(max-width:600px){
-      .three-col{grid-template-columns:1fr!important}
-      .six-col{grid-template-columns:1fr 1fr!important}
-      .five-col{grid-template-columns:1fr 1fr!important}
+      /* Global Layout Resets */
+      section { padding: 60px 16px !important; }
+      .hero-section { min-height: auto !important; padding: 100px 16px 120px !important; }
+      .hero-content { padding: 100px 16px 60px !important; }
+      .modal-box { width: 95% !important; padding: 24px 16px !important; }
+      h1, h2.serif { font-size: clamp(1.8rem, 8vw, 2.5rem) !important; line-height: 1.2 !important; }
+      .section-label { font-size: 0.65rem !important; }
+      
+      /* Header & Logo Fixes */
+      .logo-title { font-size: 1.1rem !important; letter-spacing: 0.04em !important; }
+      .logo-subtitle { font-size: 0.45rem !important; letter-spacing: 0.15em !important; }
+      nav { padding: 0 12px !important; }
+      nav > div:last-child { gap: 8px !important; }
+      nav button { font-size: 0.6rem !important; padding: 6px 10px !important; }
+      .btn-gold { padding: 6px 10px !important; font-size: 0.6rem !important; white-space: nowrap !important; }
+      
+      /* Force single column */
+      .two-col, .three-col, .five-col, .six-col {
+        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+      
+      /* Stop inline paddings and heights from breaking mobile */
+      .two-col > div { padding: 24px 16px !important; min-height: auto !important; height: auto !important; }
+      .two-col img { min-height: 250px !important; max-height: 300px !important; }
+      
+      /* Card Fixes */
+      .pricing-card, .testi-card, .why-card { padding: 24px 16px !important; }
+      .testi-img-wrapper { margin: -24px -16px 22px !important; }
+      
+      /* Specific UI fixes */
+      .satisfaction-box {
+        display: block !important;
+        position: absolute !important;
+        bottom: 16px !important; left: 16px !important; right: 16px !important;
+        text-align: center !important;
+        padding: 12px 0 !important;
+        transform: none !important;
+      }
+      .spec-tab { padding: 8px 12px !important; font-size: 0.75rem !important; }
+      .btn-primary, .btn-outline, .btn-gold { width: 100% !important; text-align: center !important; }
+      
+      /* Admin panel mobile fixes */
       .admin-body{flex-direction:column}
       .admin-sidebar{width:100%;border-right:none;border-bottom:1px solid #2E2A27;padding:8px 0;display:flex;overflow-x:auto}
       .admin-nav-item{border-left:none;border-bottom:3px solid transparent;white-space:nowrap}
       .admin-nav-item.active{border-left-color:transparent;border-bottom-color:var(--gold)}
+      .admin-content { padding: 20px 12px !important; }
+      table.admin-table { display: block; overflow-x: auto; white-space: nowrap; }
     }
   `}</style>
 );
@@ -1907,6 +1968,7 @@ export default function App() {
           />{" "}
           <div>
             <div
+              className="logo-title"
               style={{
                 fontFamily: "'Playfair Display',serif",
                 fontSize: "1.35rem",
@@ -1919,6 +1981,7 @@ export default function App() {
               MARKVIBE
             </div>
             <div
+              className="logo-subtitle"
               style={{
                 fontSize: ".5rem",
                 letterSpacing: ".28em",
@@ -2003,6 +2066,7 @@ export default function App() {
           />
         </div>
         <motion.div
+          className="satisfaction-box"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
@@ -2037,6 +2101,7 @@ export default function App() {
           </div>
         </motion.div>
         <div
+          className="hero-content"
           style={{
             position: "relative",
             zIndex: 2,
@@ -2149,6 +2214,7 @@ export default function App() {
           </motion.div>
         </div>
         <motion.div
+          className="scroll-badge"
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
           onClick={() => go("about")}
@@ -3558,9 +3624,9 @@ export default function App() {
                     <div className="testi-card">
                       {/* Project photo */}
                       <div
+                        className="testi-img-wrapper"
                         style={{
                           height: "170px",
-                          margin: "-32px -28px 22px",
                           overflow: "hidden",
                           position: "relative",
                         }}
@@ -3925,7 +3991,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontSize: ".6rem",
                     letterSpacing: ".18em",
@@ -3939,7 +4005,9 @@ export default function App() {
                   <div style={{
                     fontSize: ".88rem",
                     color: "var(--ink-2)",
-                    lineHeight: 1.6
+                    lineHeight: 1.6,
+                    wordBreak: "break-word",
+                    whiteSpace: "normal"
                   }}>
                     {c.val}
                   </div>
