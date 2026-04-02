@@ -1,3 +1,8 @@
-# https://www.robotstxt.org/robotstxt.html
+# Allow all search engines to crawl the site
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /private
+
+# Sitemap location (update with your actual domain)
+Sitemap: https://markvibe-interior.vercel.app/sitemap.xml
